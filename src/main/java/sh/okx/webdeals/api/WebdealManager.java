@@ -54,7 +54,7 @@ public abstract class WebdealManager {
     }
 
     public double getBalance(Player player) {
-        return config.getInt(getPath(player), 0);
+        return config.getDouble(getPath(player), 0);
     }
 
     private final char[] characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
