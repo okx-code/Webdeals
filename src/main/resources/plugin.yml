@@ -1,0 +1,51 @@
+name: Webdeals
+version: 1.0
+main: sh.okx.webdeals.Webdeals
+author: Okx
+softdepend: [BuycraftX, Vault]
+
+commands:
+  webdeals:
+    description: Manage webdeals.
+    permission: webdeals.command
+    aliases: [wd, webdeals, wds, webdeal]
+
+permissions:
+  webdeals.*:
+    children:
+      webdeals.command: true
+      webdeals.command.help: true
+      webdeals.command.pay: true
+      webdeals.command.buy: true
+      webdeals.command.admin.*: true
+      webdeals.command.balance.*: true
+  webdeals.command.balance.*:
+    children:
+      webdeals.command.balance: true
+      webdeals.command.balance.other: true
+  webdeals.command.admin.*:
+    children:
+      webdeals.command.admin.add: true
+      webdeals.command.admin.take: true
+      webdeals.command.admin.set: true
+      webdeals.command.admin.reload: true
+  webdeals.command:
+    default: true
+  webdeals.command.help:
+    default: true
+  webdeals.command.pay:
+    default: true
+  webdeals.command.balance:
+    default: true
+  webdeals.command.buy:
+    default: true
+  webdeals.command.balance.other:
+    default: true
+  webdeals.command.admin.add:
+    default: op
+  webdeals.command.admin.take:
+    default: op
+  webdeals.command.admin.set:
+    default: op
+  webdeals.command.admin.reload:
+    default: op

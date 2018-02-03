@@ -1,0 +1,13 @@
+# This is the list of the possible worth of coupons people create.
+coupons:
+  amounts:
+  - 5
+  - 10
+  - 20
+  - 50
+
+# The secret code used to authenticate and create coupons.
+secret: code
+
+# How much one unit of currency (ie one dollar or one pound) can be bought for with in-game currency. Set to 0 to disable.
+buy: 0

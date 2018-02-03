@@ -1,0 +1,97 @@
+# Please read the following page on how to use formatting in strings (ie %s)
+# https://docs.oracle.com/javase/9/docs/api/java/util/Formatter.html
+# Note that whenever %s is used, it is optional.
+
+# See the following for information on how to change 'money_format'
+# https://docs.oracle.com/javase/9/docs/api/java/text/DecimalFormat.html
+# If you just want to change the currency, just change the $ character to whichever you like, ie £
+# It is very important to change the currency to what you are using if you are not using dollars!
+# Otherwise people will get confused. Because if the main currency in your store is £
+# and you have the money format using $, the plugin will say a coupon's worth $10 but it will actually be worth £10!
+
+# For colour formatting, see the following
+# https://minecraft.gamepedia.com/Formatting_codes
+
+money_format: '$#,##0.00'
+
+command:
+  add:
+    usage: '/%s add [player] <amount>'
+    success: '&eGave %s to %s. They now have %s.'
+  take:
+    usage: '/%s take [player] <amount>'
+    success: '&eTaken %s from %s. They now have %s.'
+  set:
+    usage: '/%s set [player] <amount>'
+    success: '&eSet the balance of %2$s to %1$s.'
+  reload:
+    usage: '/%s reload'
+    success: '&aReloaded config.'
+  balance:
+    usage: '/%s balance [player]'
+    success:
+      self: '&6You have &e%2$s'
+      other: '&e%s&6 has &e%s'
+  pay:
+    usage: '/%s pay <player> <amount>'
+    not_enough: '&cYou do not have that much money!'
+    success: '&aPaid &e%s&a to &e%s&a. You now have &e%s'
+  buy:
+    usage: '/%s buy <amount>'
+    disabled: '&cYou cannot buy!'
+    not_enough: '&cYou do not have enough much money! You need %s'
+    success: '&6You have bought &e%s &6for &e%s&6. You now have &e%s'
+  help:
+    add:
+      usage: '&a%s&e Give a player money to spend in the store.'
+      permission: webdeals.command.admin.add
+    take:
+      usage: '&a%s&e Take money from a player so they cannot spend it in the store.'
+      permission: webdeals.command.admin.take
+    set:
+      usage: '&a%s&e Set the balance of a player.'
+      permission: webdeals.command.admin.set
+    reload:
+      usage: '&a%s&e Reload configuration files.'
+      permission: webdeals.command.admin.reload
+    balance:
+      usage: '&a%s&e Check the balance of you or another player.'
+      permission: webdeals.command.balance
+    pay:
+      usage: '&a%s&e Pay a player a certain amount of money.'
+      permission: webdeals.command.pay
+    buy:
+      usage: '&a%s&e Buy money to spend in the store with in-game currency.'
+      permission: webdeals.command.buy
+gui:
+  root:
+    balance:
+      name: '&6Balance'
+      description: '&7&oSee how much you have to spend in the store.'
+    redeem:
+      name: '&6Redeem'
+      description: '&7&oRedeem your balance for a coupon.'
+      please_wait: '&ePlease wait, generating coupon...'
+    coupons:
+      name: '&6Coupons'
+      description: '&7&oShow coupons you have created.'
+      please_wait: '&ePlease wait, getting coupons...'
+    help:
+      name: '&6Help'
+      description: '&7&oShow commands you can use'
+  redeem:
+    name: '&6Coupon worth &e%s'
+  list:
+    name: '&6Coupon worth &e%s'
+    description: '&8&oCode: &7&o%s'
+coupon:
+  creation_error: '&cThere was an error creating the coupon. You have not been charged. This could be because the secret key in the config is not setup yet.'
+  success: '&6You have created a coupon worth &e%s&6, the code is &e%s'
+  not_enough: '&cYou do not have enough to create a &e%s &ccoupon! You have &e%s&c, you need &e%s &cmore.'
+  code: '&6Code: &e%s'
+error:
+  player_required: '&cYou must be a player to use this command!'
+  invalid_player: '&cCannot find player: %s'
+  invalid_number: '&cInvalid number: %s'
+  no_permission: '&cYou do not have permission to run that command!'
+  get_coupons: '&cFailed to get coupons. This could be because the secret key in the config is not setup yet.'
