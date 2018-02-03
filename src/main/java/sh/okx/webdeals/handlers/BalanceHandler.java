@@ -17,7 +17,8 @@ public class BalanceHandler implements Consumer<InventoryClickEvent> {
     public void accept(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
 
-        plugin.sendMessage(player, "command.balance.success", plugin.getManager().format(plugin.getManager().getBalance(player)));
+        plugin.sendMessage(player, "command.balance.success.self", player.getName(),
+                plugin.getManager().format(plugin.getManager().getBalance(player)));
         player.closeInventory();
     }
 }
