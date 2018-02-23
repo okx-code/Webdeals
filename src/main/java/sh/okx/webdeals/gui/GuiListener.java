@@ -6,8 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.plugin.java.JavaPlugin;
-import sh.okx.webdeals.Webdeals;
 
 public class GuiListener implements Listener {
     private Gui gui;
@@ -19,29 +17,34 @@ public class GuiListener implements Listener {
     @EventHandler
     public void on(InventoryClickEvent e) {
         HumanEntity entity = e.getWhoClicked();
-        if(!gui.isFor(e.getWhoClicked())) {
+        if (!e.getInventory().getHolder().equals(gui)) {
             return;
         }
 
         e.setCancelled(true);
 
-        if(e.getClickedInventory() == null) {
-            Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(Webdeals.class), entity::closeInventory);
+        if (e.getClickedInventory() == null) {
+            if (gui.isCloseIfClickOutsideOfWindow()) {
+                Bukkit.getScheduler().runTask(gui.getPlugin(), entity::closeInventory);
+            }
             return;
-        } else if(!e.getInventory().equals(e.getClickedInventory())) {
+        } else if (!e.getInventory().equals(e.getClickedInventory())) {
             // if the inventory clicked is not the upper one
             return;
         }
 
-        Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(Webdeals.class), () -> gui.handle(e));
+        Bukkit.getScheduler().runTask(gui.getPlugin(), () -> gui.handle(e));
     }
 
     @EventHandler
     public void on(InventoryCloseEvent e) {
-        if(!gui.isFor(e.getPlayer())) {
+        HumanEntity entity = e.getPlayer();
+        if (!e.getInventory().getHolder().equals(gui)) {
             return;
         }
 
-        gui.close(e.getPlayer());
+        if(gui.isUnregisterOnClose()) {
+            gui.unregister();
+        }
     }
 }

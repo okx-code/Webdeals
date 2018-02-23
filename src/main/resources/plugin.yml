@@ -2,7 +2,7 @@ name: Webdeals
 version: 1.0
 main: sh.okx.webdeals.Webdeals
 author: Okx
-softdepend: [BuycraftX, Vault]
+softdepend: [BuycraftX, EnjinMinecraftPlugin, Vault]
 
 commands:
   webdeals:

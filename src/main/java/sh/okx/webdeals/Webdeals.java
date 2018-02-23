@@ -14,6 +14,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import sh.okx.webdeals.api.WebdealManager;
 import sh.okx.webdeals.buycraft.BuycraftWebdealManager;
+import sh.okx.webdeals.enjin.EnjinWebdealManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,13 +51,16 @@ public class Webdeals extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        messages = getConfig("messages");
+        if(!setupManager()) {
+            return;
+        }
+
         if(!setupEconomy()) {
             getLogger().warning("Vault or an economy plugin has not been found. Buying has been disabled.");
         }
-        messages = getConfig("messages");
 
         saveDefaultConfig();
-        setupManager();
 
         getCommand("webdeals").setExecutor(command = new WebdealsCommand(this));
     }
@@ -79,17 +83,22 @@ public class Webdeals extends JavaPlugin {
         reloadConfig();
     }
 
-    private void setupManager() {
+    private boolean setupManager() {
         PluginManager plugins = Bukkit.getServer().getPluginManager();
 
         if(plugins.isPluginEnabled("BuycraftX")) {
             getLogger().info("Using BuycraftX as the webdeal manager.");
             this.manager = new BuycraftWebdealManager(this);
+        } else if(plugins.isPluginEnabled("EnjinMinecraftPlugin")) {
+            getLogger().info("Using EnjinMinecraftPlugin as the webdeal manager");
+            this.manager = new EnjinWebdealManager(this);
         } else {
             getLogger().severe("No suitable webdeal plugin found, disabling. Applicable plugins are: " +
                     String.join(", ", getDescription().getSoftDepend()));
             plugins.disablePlugin(this);
+            return false;
         }
+        return true;
     }
 
     public FileConfiguration getConfig(String name) {

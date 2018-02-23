@@ -7,7 +7,18 @@ coupons:
   - 50
 
 # The secret code used to authenticate and create coupons.
+# This is the key you use in /enjin key <key> or /buycraft secret <key>
 secret: code
+
+enjin:
+  # The preset ID for the store
+  # To find the preset ID for an Enjin DonationCraft store, open up the URL to edit the store.
+  # The url should look like this http://www.mycoolserver.enjin.com/admin/editmodule/index/preset/123456
+  # The preset_id is whatever the 123456 is.
+  preset_id: 0
+
+  # The domain for your Enjin website. Must include the http:// or https://
+  domain: http://mycoolserver.enjin.com
 
 # How much one unit of currency (ie one dollar or one pound) can be bought for with in-game currency. Set to 0 to disable.
 buy: 0

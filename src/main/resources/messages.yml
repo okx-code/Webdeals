@@ -76,6 +76,7 @@ gui:
       name: '&6Coupons'
       description: '&7&oShow coupons you have created.'
       please_wait: '&ePlease wait, getting coupons...'
+      none: '&cYou have no coupons.'
     help:
       name: '&6Help'
       description: '&7&oShow commands you can use'

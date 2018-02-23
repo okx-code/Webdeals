@@ -4,19 +4,23 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
 import sh.okx.webdeals.Webdeals;
-import sh.okx.webdeals.api.CouponCreationError;
+import sh.okx.webdeals.api.CouponError;
 import sh.okx.webdeals.api.SimpleCoupon;
 import sh.okx.webdeals.api.WebdealManager;
 import sh.okx.webdeals.buycraft.json.Coupon;
 import sh.okx.webdeals.buycraft.json.existing.CouponExisting;
 import sh.okx.webdeals.buycraft.json.existing.CouponList;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BuycraftWebdealManager extends WebdealManager {
     public BuycraftWebdealManager(Webdeals plugin) {
@@ -31,7 +35,7 @@ public class BuycraftWebdealManager extends WebdealManager {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 postCreateCoupon(json);
-            } catch (IOException | CouponCreationError ex) {
+            } catch (IOException | CouponError ex) {
                 ex.printStackTrace();
                 return null;
             }
@@ -43,7 +47,6 @@ public class BuycraftWebdealManager extends WebdealManager {
     public CompletableFuture<List<SimpleCoupon>> getCoupons(Player player) {
         return CompletableFuture.supplyAsync(() -> {
             List<SimpleCoupon> coupons = new ArrayList<>();
-
             try {
                 for(CouponExisting coupon : getListCoupons().getData()) {
                     String[] parts = coupon.getNote().split("\\|");
@@ -71,7 +74,7 @@ public class BuycraftWebdealManager extends WebdealManager {
                             uuid,
                             coupon.getDiscount().getValue()));
                 }
-            } catch (IOException | CouponCreationError ex) {
+            } catch (IOException | CouponError ex) {
                 ex.printStackTrace();
                 return null;
             }
@@ -79,7 +82,7 @@ public class BuycraftWebdealManager extends WebdealManager {
         });
     }
 
-    private void postCreateCoupon(String json) throws CouponCreationError, IOException {
+    private void postCreateCoupon(String json) throws CouponError, IOException {
         URL url = new URL("https://plugin.buycraft.net/coupons");
         URLConnection con = url.openConnection();
         HttpURLConnection http = (HttpURLConnection) con;
@@ -95,7 +98,7 @@ public class BuycraftWebdealManager extends WebdealManager {
         }
         JsonObject o = new JsonParser().parse(toString(http.getInputStream())).getAsJsonObject();
         if (o.has("error_code")) {
-            throw new CouponCreationError(o.get("error_message").getAsString());
+            throw new CouponError(o.get("error_message").getAsString());
         }
     }
 
@@ -116,7 +119,7 @@ public class BuycraftWebdealManager extends WebdealManager {
         }
     }
 
-    private CouponList getListCoupons() throws CouponCreationError, IOException {
+    private CouponList getListCoupons() throws CouponError, IOException {
         URL url = new URL("https://plugin.buycraft.net/coupons");
         URLConnection con = url.openConnection();
         HttpURLConnection http = (HttpURLConnection) con;
@@ -130,21 +133,21 @@ public class BuycraftWebdealManager extends WebdealManager {
 
         JsonObject o = new JsonParser().parse(input).getAsJsonObject();
         if (o.has("error_code")) {
-            throw new CouponCreationError(o.get("error_message").getAsString());
+            throw new CouponError(o.get("error_message").getAsString());
         }
 
         return plugin.getGson().fromJson(input, CouponList.class);
     }
 
-    private String toString(InputStream inputStream) throws IOException {
-        BufferedInputStream bis = new BufferedInputStream(inputStream);
-        ByteArrayOutputStream buf = new ByteArrayOutputStream();
-        int result = bis.read();
-        while (result != -1) {
-            buf.write((byte) result);
-            result = bis.read();
+    private final char[] characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+
+    protected String randomCouponName() {
+        StringBuilder couponName = new StringBuilder();
+
+        for(int i = 0; i < 8; i++) {
+            couponName.append(characters[ThreadLocalRandom.current().nextInt(characters.length)]);
         }
 
-        return buf.toString("UTF-8");
+        return couponName.toString();
     }
 }

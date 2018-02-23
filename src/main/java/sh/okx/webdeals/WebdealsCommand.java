@@ -44,7 +44,7 @@ public class WebdealsCommand implements CommandExecutor {
         }
 
         List<Double> amounts = plugin.getConfig().getDoubleList("coupons.amounts");
-        redeem = new Gui("Redeem", NumberUtil.roundUp(amounts.size(), 9) / 9);
+        redeem = new Gui(plugin, "Redeem", NumberUtil.roundUp(amounts.size(), 9) / 9);
 
         for(int i = 0; i < amounts.size(); i++) {
             double amount = amounts.get(i);
@@ -54,7 +54,7 @@ public class WebdealsCommand implements CommandExecutor {
                     .build(), i, new RedeemHandler(plugin, amount));
         }
 
-        root = new Gui("Webdeals", 1);
+        root = new Gui(plugin, "Webdeals", 1);
         root.register(new ItemBuilder(Material.PAPER)
                 .setDisplayName(plugin.getMessage("gui.root.balance.name"))
                 .setLore(plugin.getMessage("gui.root.balance.description").split("\n"))

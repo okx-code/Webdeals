@@ -1,14 +1,16 @@
 package sh.okx.webdeals.api;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import sh.okx.webdeals.Webdeals;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class WebdealManager {
     protected Webdeals plugin;
@@ -57,18 +59,18 @@ public abstract class WebdealManager {
         return config.getDouble(getPath(player), 0);
     }
 
-    private final char[] characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-
-    protected String randomCouponName() {
-        StringBuilder couponName = new StringBuilder();
-
-        for(int i = 0; i < 8; i++) {
-            couponName.append(characters[ThreadLocalRandom.current().nextInt(characters.length)]);
-        }
-
-        return couponName.toString();
-    }
-
     public abstract CompletableFuture<String> createCoupon(Player player, double amount);
     public abstract CompletableFuture<List<SimpleCoupon>> getCoupons(Player player);
+
+    protected String toString(InputStream inputStream) throws IOException {
+        BufferedInputStream bis = new BufferedInputStream(inputStream);
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        int result = bis.read();
+        while (result != -1) {
+            buf.write((byte) result);
+            result = bis.read();
+        }
+
+        return buf.toString("UTF-8");
+    }
 }

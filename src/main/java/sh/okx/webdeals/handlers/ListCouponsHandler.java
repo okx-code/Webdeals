@@ -34,7 +34,14 @@ public class ListCouponsHandler implements Consumer<InventoryClickEvent> {
                 return;
             }
 
-            Gui list = new Gui("Redeem", NumberUtil.roundUp(coupons.size(), 9) / 9);
+            if(coupons.size() == 0) {
+                plugin.sendMessage(player, "gui.root.coupons.none");
+                return;
+            }
+
+            Gui list = new Gui(plugin, "Coupons",
+                NumberUtil.roundUp(coupons.size(), 9) / 9);
+            list.setUnregisterOnClose(true);
 
             for(int i = 0; i < coupons.size(); i++) {
                 SimpleCoupon coupon = coupons.get(i);
