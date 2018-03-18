@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 public class GuiListener implements Listener {
     private Gui gui;
@@ -39,7 +40,8 @@ public class GuiListener implements Listener {
     @EventHandler
     public void on(InventoryCloseEvent e) {
         HumanEntity entity = e.getPlayer();
-        if (!e.getInventory().getHolder().equals(gui)) {
+        InventoryHolder holder = e.getInventory().getHolder();
+        if (holder == null || !holder.equals(gui)) {
             return;
         }
 
