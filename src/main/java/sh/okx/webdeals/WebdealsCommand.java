@@ -4,7 +4,7 @@ package sh.okx.webdeals;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.CreatureSpawner;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,6 +17,7 @@ import sh.okx.webdeals.handlers.ListCouponsHandler;
 import sh.okx.webdeals.handlers.RedeemHandler;
 import sh.okx.webdeals.util.ItemBuilder;
 import sh.okx.webdeals.util.NumberUtil;
+import sh.okx.webdeals.util.PlayerUtil;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -155,7 +156,7 @@ public class WebdealsCommand implements CommandExecutor {
                         return true;
                     }
 
-                    Player bal = args.length == 2 ? Bukkit.getPlayer(args[1]) : player;
+                    OfflinePlayer bal = args.length == 2 ? PlayerUtil.getPlayer(args[1]) : player;
                     if (bal == null) {
                         plugin.sendMessage(player, "error.invalid_player", args[1]);
                         return true;
@@ -163,10 +164,10 @@ public class WebdealsCommand implements CommandExecutor {
 
                     if(args.length == 2 && player.hasPermission("webdeals.command.balance.other")) {
                         plugin.sendMessage(player, "command.balance.success.other",
-                                bal.getName(), plugin.getManager().format(plugin.getManager().getBalance(bal)));
+                                bal.getName(), plugin.getManager().format(plugin.getManager().getBalance(bal.getUniqueId())));
                     } else {
                         plugin.sendMessage(player, "command.balance.success.self",
-                                bal.getName(), plugin.getManager().format(plugin.getManager().getBalance(bal)));
+                                bal.getName(), plugin.getManager().format(plugin.getManager().getBalance(bal.getUniqueId())));
                     }
                     return true;
                 case "buy":

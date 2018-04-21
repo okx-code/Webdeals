@@ -39,7 +39,6 @@ public class GuiListener implements Listener {
 
     @EventHandler
     public void on(InventoryCloseEvent e) {
-        HumanEntity entity = e.getPlayer();
         InventoryHolder holder = e.getInventory().getHolder();
         if (holder == null || !holder.equals(gui)) {
             return;

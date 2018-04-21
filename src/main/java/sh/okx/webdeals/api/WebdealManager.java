@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class WebdealManager {
@@ -36,27 +37,31 @@ public abstract class WebdealManager {
         return df.format(v);
     }
 
-    private String getPath(Player player) {
-        return "balances." + player.getUniqueId();
+    private String getPath(UUID uuid) {
+        return "balances." + uuid;
     }
 
     public void add(Player player, double amount) {
-        config.set(getPath(player), getBalance(player) + amount);
+        config.set(getPath(player.getUniqueId()), getBalance(player) + amount);
         plugin.saveConfig(config, "balances");
     }
 
     public void take(Player player, double amount) {
-        config.set(getPath(player), getBalance(player) - amount);
+        config.set(getPath(player.getUniqueId()), getBalance(player) - amount);
         plugin.saveConfig(config, "balances");
     }
 
     public void set(Player player, double amount) {
-        config.set(getPath(player), Math.max(0, getBalance(player) - amount));
+        config.set(getPath(player.getUniqueId()), Math.max(0, amount));
         plugin.saveConfig(config, "balances");
     }
 
     public double getBalance(Player player) {
-        return config.getDouble(getPath(player), 0);
+        return getBalance(player.getUniqueId());
+    }
+
+    public double getBalance(UUID uuid) {
+        return config.getDouble(getPath(uuid), 0);
     }
 
     public abstract CompletableFuture<String> createCoupon(Player player, double amount);
