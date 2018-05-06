@@ -95,4 +95,4 @@ error:
   invalid_player: '&cCannot find player: %s'
   invalid_number: '&cInvalid number: %s'
   no_permission: '&cYou do not have permission to run that command!'
-  get_coupons: '&cFailed to get coupons. This could be because the secret key in the config is not setup yet.'
+  get_coupons: '&cFailed to get coupons. This could be because the secret key is not setup yet.'
