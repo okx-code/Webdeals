@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,9 +18,11 @@ import sh.okx.webdeals.buycraft.BuycraftWebdealManager;
 import sh.okx.webdeals.enjin.EnjinWebdealManager;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Properties;
 
 public class Webdeals extends JavaPlugin {
     private Gson gson = new Gson();
@@ -99,6 +102,23 @@ public class Webdeals extends JavaPlugin {
             return false;
         }
         return true;
+    }
+
+    public String getBuycraftSecret() {
+        Plugin buycraft = Bukkit.getPluginManager().getPlugin("BuycraftX");
+        String secret = null;
+        try {
+            InputStream config =
+                new FileInputStream(new File(buycraft.getDataFolder(), "config.properties"));
+            Properties properties = new Properties();
+            properties.load(config);
+
+            secret = properties.getProperty("server-key");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return secret;
     }
 
     public FileConfiguration getConfig(String name) {

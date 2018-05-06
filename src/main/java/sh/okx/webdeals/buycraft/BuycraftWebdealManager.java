@@ -2,7 +2,9 @@ package sh.okx.webdeals.buycraft;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import sh.okx.webdeals.Webdeals;
 import sh.okx.webdeals.api.CouponError;
 import sh.okx.webdeals.api.SimpleCoupon;
@@ -11,13 +13,17 @@ import sh.okx.webdeals.buycraft.json.Coupon;
 import sh.okx.webdeals.buycraft.json.existing.CouponExisting;
 import sh.okx.webdeals.buycraft.json.existing.CouponList;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
@@ -25,6 +31,24 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BuycraftWebdealManager extends WebdealManager {
     public BuycraftWebdealManager(Webdeals plugin) {
         super(plugin);
+    }
+
+    @Override
+    protected String getSecret() {
+        Plugin buycraft = Bukkit.getPluginManager().getPlugin("BuycraftX");
+        String secret = null;
+        try {
+            InputStream config =
+                new FileInputStream(new File(buycraft.getDataFolder(), "config.properties"));
+            Properties properties = new Properties();
+            properties.load(config);
+
+            secret = properties.getProperty("server-key");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return secret;
     }
 
     @Override
@@ -91,7 +115,7 @@ public class BuycraftWebdealManager extends WebdealManager {
 
         http.setFixedLengthStreamingMode(json.length());
         http.setRequestProperty("Content-Type", "application/json");
-        http.setRequestProperty("X-Buycraft-Secret", plugin.getConfig().getString("secret"));
+        http.setRequestProperty("X-Buycraft-Secret", secret);
         http.connect();
         try(OutputStream os = http.getOutputStream()) {
             os.write(json.getBytes());
@@ -109,7 +133,7 @@ public class BuycraftWebdealManager extends WebdealManager {
         http.setRequestMethod("DELETE");
 
         http.setRequestProperty("Content-Type", "application/json");
-        http.setRequestProperty("X-Buycraft-Secret", plugin.getConfig().getString("secret"));
+        http.setRequestProperty("X-Buycraft-Secret", secret);
         http.connect();
 
         String output = toString(http.getInputStream());
@@ -126,7 +150,7 @@ public class BuycraftWebdealManager extends WebdealManager {
         http.setRequestMethod("GET");
 
         http.setRequestProperty("Content-Type", "application/json");
-        http.setRequestProperty("X-Buycraft-Secret", plugin.getConfig().getString("secret"));
+        http.setRequestProperty("X-Buycraft-Secret", secret);
         http.connect();
 
         String input = toString(http.getInputStream());

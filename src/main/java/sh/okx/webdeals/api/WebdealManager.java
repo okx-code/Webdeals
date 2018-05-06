@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class WebdealManager {
+    protected String secret;
     protected Webdeals plugin;
     private FileConfiguration config;
     private DecimalFormat df;
@@ -25,12 +26,16 @@ public abstract class WebdealManager {
     public WebdealManager(Webdeals plugin) {
         this.plugin = plugin;
         this.config = plugin.getConfig("balances");
+        this.secret = getSecret();
 
         reload();
     }
 
+    protected abstract String getSecret();
+
     public void reload() {
         df = new DecimalFormat(plugin.getMessage("money_format"));
+        secret = getSecret();
     }
 
     public String format(double v) {

@@ -6,10 +6,7 @@ coupons:
   - 20
   - 50
 
-# The secret code used to authenticate and create coupons.
-# This is the key you use in /enjin key <key> or /buycraft secret <key>
-secret: code
-
+# This section is only important if you're using the Enjin store, not the Buycraft store
 enjin:
   # The preset ID for the store
   # To find the preset ID for an Enjin DonationCraft store, open up the URL to edit the store.

@@ -2,11 +2,14 @@ package sh.okx.webdeals.enjin;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import sh.okx.webdeals.Webdeals;
 import sh.okx.webdeals.api.CouponError;
 import sh.okx.webdeals.api.SimpleCoupon;
 import sh.okx.webdeals.api.WebdealManager;
+import sh.okx.webdeals.enjin.json.EnjinConfig;
 import sh.okx.webdeals.enjin.json.create.Coupon;
 import sh.okx.webdeals.enjin.json.create.CreateCouponRequest;
 import sh.okx.webdeals.enjin.json.create.CreateCouponResponse;
@@ -15,7 +18,11 @@ import sh.okx.webdeals.enjin.json.list.CouponExisting;
 import sh.okx.webdeals.enjin.json.list.GetCouponsRequest;
 import sh.okx.webdeals.enjin.json.list.GetCouponsResponse;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -30,8 +37,29 @@ public class EnjinWebdealManager extends WebdealManager {
     }
 
     @Override
+    protected String getSecret() {
+        Plugin enjin = Bukkit.getPluginManager().getPlugin("EnjinMinecraftPlugin");
+        String secret = null;
+        try {
+            InputStream config =
+                new FileInputStream(new File(enjin.getDataFolder(), "config.json"));
+
+            EnjinConfig json = plugin.getGson()
+                .fromJson(new InputStreamReader(config), EnjinConfig.class);
+            secret = json.getAuthKey();
+
+            config.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return secret;
+    }
+
+
+    @Override
     public CompletableFuture<String> createCoupon(Player player, double amount) {
-        Coupon coupon = new Coupon(plugin.getConfig().getString("secret"),
+        Coupon coupon = new Coupon(secret,
             plugin.getConfig().getString("enjin.preset_id"),
             amount,
             player.getUniqueId().toString());
@@ -107,7 +135,7 @@ public class EnjinWebdealManager extends WebdealManager {
         http.setDoOutput(true);
 
         String json = plugin.getGson().toJson(new DeleteCouponRequest(
-            plugin.getConfig().getString("secret"),
+            secret,
             plugin.getConfig().getInt("enjin.preset_id"),
             id));
 
@@ -128,7 +156,7 @@ public class EnjinWebdealManager extends WebdealManager {
         http.setDoOutput(true);
 
         String json = plugin.getGson().toJson(new GetCouponsRequest(
-            plugin.getConfig().getString("secret"),
+            secret,
             plugin.getConfig().getInt("enjin.preset_id")));
 
         http.setFixedLengthStreamingMode(json.length());
