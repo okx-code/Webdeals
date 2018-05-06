@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,11 +17,9 @@ import sh.okx.webdeals.buycraft.BuycraftWebdealManager;
 import sh.okx.webdeals.enjin.EnjinWebdealManager;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Properties;
 
 public class Webdeals extends JavaPlugin {
     private Gson gson = new Gson();
@@ -55,7 +52,8 @@ public class Webdeals extends JavaPlugin {
     @Override
     public void onEnable() {
         messages = getConfig("messages");
-        if(!setupManager()) {
+        Metrics metrics = new Metrics(this);
+        if(!setupManager(metrics)) {
             return;
         }
 
@@ -66,6 +64,7 @@ public class Webdeals extends JavaPlugin {
         saveDefaultConfig();
 
         getCommand("webdeals").setExecutor(command = new WebdealsCommand(this));
+
     }
 
     public boolean canBuy() {
@@ -86,15 +85,17 @@ public class Webdeals extends JavaPlugin {
         reloadConfig();
     }
 
-    private boolean setupManager() {
+    private boolean setupManager(Metrics metrics) {
         PluginManager plugins = Bukkit.getServer().getPluginManager();
 
         if(plugins.isPluginEnabled("BuycraftX")) {
             getLogger().info("Using BuycraftX as the webdeal manager.");
             this.manager = new BuycraftWebdealManager(this);
+            metrics.addCustomChart(new Metrics.SimplePie("store_type", () -> "Buycraft"));
         } else if(plugins.isPluginEnabled("EnjinMinecraftPlugin")) {
             getLogger().info("Using EnjinMinecraftPlugin as the webdeal manager");
             this.manager = new EnjinWebdealManager(this);
+            metrics.addCustomChart(new Metrics.SimplePie("store_type", () -> "Enjin"));
         } else {
             getLogger().severe("No suitable webdeal plugin found, disabling. Applicable plugins are: " +
                     String.join(", ", getDescription().getSoftDepend()));
@@ -102,23 +103,6 @@ public class Webdeals extends JavaPlugin {
             return false;
         }
         return true;
-    }
-
-    public String getBuycraftSecret() {
-        Plugin buycraft = Bukkit.getPluginManager().getPlugin("BuycraftX");
-        String secret = null;
-        try {
-            InputStream config =
-                new FileInputStream(new File(buycraft.getDataFolder(), "config.properties"));
-            Properties properties = new Properties();
-            properties.load(config);
-
-            secret = properties.getProperty("server-key");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return secret;
     }
 
     public FileConfiguration getConfig(String name) {
